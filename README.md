@@ -27,8 +27,8 @@ following:
 
 ## _run\_analysis.R_ Usage
 
-This is the that outputs a single, tidy file containing the average of mean and standard
-deviation observations, by subject and activity.
+This is the script that outputs a single, tidy file containing the average of mean and
+standard deviation observations, by subject and activity.
 
 ### Quick
 
