@@ -1,11 +1,10 @@
 
-# This forms part of the project from the 'Getting and Cleaning Data' course.
+# This forms part of the 'Getting and Cleaning Data' course project.
 
-# The default working directory used by the run_analysis function; if the script
-# is loaded using the 'source' function, then this is the directory that
+# The default working directory used by the 'run_analysis' function; if the
+# scriptis loaded using the 'source' function, then this is the directory that
 # contains the 'run_analysis.R' script. Otherwise (if the script is pasted
 # directly into the console) this is the value returned by the 'getwd' function.
-#' 
 run_analysis.default_wd <-
     if (sys.nframe() > 0) {
         dirname(sys.frame(1)$ofile)
@@ -14,7 +13,6 @@ run_analysis.default_wd <-
     }
 
 # The URI of the source data archive that is used by the run_analysis function.
-#
 run_analysis.data_uri <- paste0(
         "https://d396qusza40orc.cloudfront.net/",
         "getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip")
@@ -30,7 +28,6 @@ run_analysis.data_uri <- paste0(
 # Param: clean
 #     Whether the data requirement of the analysis should be redownloaded and
 #     re-extracted, even if it is already present in the working directory.
-#     
 run_analysis <- function (wd = run_analysis.default_wd, clean = FALSE) {
     
     if (!require("dplyr", quietly = TRUE)) {
@@ -42,7 +39,7 @@ run_analysis <- function (wd = run_analysis.default_wd, clean = FALSE) {
     wd_restore <- getwd()
     setwd(wd)
     
-    # Obtains a tidied observations dataset from the project source data-folder.
+    # Obtains a tidy observations dataset from the project source data-folder.
     # Param: ds
     #     Specifies which dataset is to be read; one of "train" or "test".
     # Param: dr
@@ -50,32 +47,43 @@ run_analysis <- function (wd = run_analysis.default_wd, clean = FALSE) {
     #     data-folder.
     get_observations <- function (ds, dr) {
         
-        message(
-            sprintf("%s dataset: Creating tidy std and mean features... ", ds),
-            appendLF = FALSE)
+        message(sprintf(paste0("%s dataset: Creating tidy mean and",
+                               " standard-deviation features... "),
+                        ds),
+                appendLF = FALSE)
         
-        # Obtain std and mean features, with descriptive variable names.
+        # Mean and std features, with descriptive variable names.
         X_tidy <- {
+            
             X <- read.table(file.path(dr, ds, sprintf("X_%s.txt", ds)))
             features <- read.table(file.path(dr, "features.txt"))
+            
             mean_and_std_indices <- grep("-(mean|std)\\(\\)", features$V2)
             X <- X[, mean_and_std_indices]
-            names(X) <- features$V2[mean_and_std_indices]
+            
+            # Hyphens and parentheses are replaced by 'write.table'; strip
+            # parentheses and leave hyphens to be replaced with periods.
+            names(X) <- gsub("(\\(|\\))", "", features$V2[mean_and_std_indices])
+            
             X
         }
 
-        # Obtain label data, with descriptive factors and variable name.
+        # Obtain label data, with descriptive factors and variable names.
         y_tidy <- {
+            
             y <- read.table(file.path(dr, ds, sprintf("y_%s.txt", ds)))
             activity_labels <- read.table(file.path(dr, "activity_labels.txt"))
+            
             names(activity_labels)[2] <- "activity"
             y <- suppressMessages(left_join(y, activity_labels))
             y$V1 <- NULL
+            
             y
         }
         
         # Obtain subject data, with descriptive variable name.
         subject_tidy <- {
+            
             subject <- read.table(
                 file.path(dr, ds, sprintf("subject_%s.txt", ds)))
             names(subject) <- "subject"
