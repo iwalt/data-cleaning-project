@@ -61,9 +61,11 @@ run_analysis <- function (wd = run_analysis.default_wd, clean = FALSE) {
             mean_and_std_indices <- grep("-(mean|std)\\(\\)", features$V2)
             X <- X[, mean_and_std_indices]
             
-            # Hyphens and parentheses are replaced by 'write.table'; strip
-            # parentheses and leave hyphens to be replaced with periods.
-            names(X) <- gsub("(\\(|\\))", "", features$V2[mean_and_std_indices])
+            # Strip parentheses and replace hyphens with periods.
+            feature_names <- features$V2[mean_and_std_indices]
+            feature_names <- gsub("(\\(|\\))", "", feature_names)
+            feature_names <- gsub("-", ".", feature_names)
+            names(X) <- feature_names
             
             X
         }
