@@ -58,7 +58,8 @@ $RECYCLE.BIN/
 *.lnk
 
 
-### Working files and folders ###
+### Working/generated files and folders ###
 
 UCI-HAR-Dataset.zip
 UCI HAR Dataset/
+feature_averages.txt
